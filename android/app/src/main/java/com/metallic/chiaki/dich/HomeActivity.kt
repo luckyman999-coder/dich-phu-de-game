@@ -88,7 +88,7 @@ class HomeActivity: AppCompatActivity()
 	{
 		super.onResume()
 		viewModel.discoveryManager.active = true
-		gameText.text = "🎮  " + prefs.gameName.ifEmpty { "Chung · tự nhận diện" }
+		gameText.text = "🎮  " + (GameBook(this).current?.let { "${it.name} · ${it.entries.size} mục" } ?: "Chung · tự nhận diện")
 		updateStatus()
 	}
 
@@ -108,7 +108,7 @@ class HomeActivity: AppCompatActivity()
 			MaterialAlertDialogBuilder(this)
 				.setTitle("Thêm mã dịch miễn phí")
 				.setMessage("Cần ít nhất 1 mã Gemini (miễn phí) để dịch. Có hướng dẫn lấy mã ngay trong Cài đặt.\n\nMuốn xem thử trước thì bấm \"Xem thử\".")
-				.setPositiveButton("Vào cài đặt") { _, _ -> startActivity(Intent(this, DichSettingsActivity::class.java)) }
+				.setPositiveButton("Lấy mã ngay") { _, _ -> startActivity(Intent(this, KeyGuideActivity::class.java)) }
 				.setNeutralButton("Xem thử") { _, _ -> startActivity(Intent(this, DemoActivity::class.java)) }
 				.show()
 			return
@@ -243,8 +243,8 @@ class HomeActivity: AppCompatActivity()
 		if(!::checklist.isInitialized) return
 		checklist.removeAllViews()
 		val paired = hosts.any { it.isRegistered }
-		addCheck("Mã dịch AI", prefs.hasAnyKey, if(prefs.hasAnyKey) "${prefs.geminiKeys.size} mã Gemini" + (if(prefs.groqKey.isNotEmpty()) " + Groq" else "") else "Thêm mã miễn phí") {
-			startActivity(Intent(this, DichSettingsActivity::class.java))
+		addCheck("Mã dịch AI", prefs.hasAnyKey, if(prefs.hasAnyKey) "${prefs.geminiKeys.size} mã Gemini" + (if(prefs.groqKey.isNotEmpty()) " + Groq" else "") else "Lấy mã miễn phí – 2 phút") {
+			startActivity(Intent(this, if(prefs.hasAnyKey) DichSettingsActivity::class.java else KeyGuideActivity::class.java))
 		}
 		addCheck("Tài khoản PSN", prefs.psnAccountId.isNotEmpty(), if(prefs.psnAccountId.isNotEmpty()) "Đã lấy Account ID" else "Đăng nhập để ghép đôi") {
 			psnLogin.launch(Intent(this, PsnLoginActivity::class.java))
@@ -400,7 +400,7 @@ class HomeActivity: AppCompatActivity()
 		val gameRow = LinearLayout(this).apply { gravity = Gravity.CENTER_VERTICAL }
 		gameText = TextView(this).apply { textSize = 16f; setTextColor(TEXT) }
 		gameRow.addView(gameText, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
-		gameRow.addView(TextView(this).apply { text = "Đổi"; textSize = 14f; setTextColor(ACCENT) })
+		gameRow.addView(TextView(this).apply { text = "Sổ tay ›"; textSize = 14f; setTextColor(ACCENT) })
 		gameCard.addView(gameRow)
 		gameCard.addView(TextView(this).apply {
 			text = "Chọn đúng game để AI giữ tên nhân vật và cách xưng hô"
@@ -421,23 +421,6 @@ class HomeActivity: AppCompatActivity()
 
 	private fun pickGame()
 	{
-		val names = arrayOf("Chung · tự nhận diện") + GamePresets.all.map { it.name }.toTypedArray()
-		MaterialAlertDialogBuilder(this)
-			.setTitle("Đang chơi game nào?")
-			.setItems(names) { _, which ->
-				if(which == 0)
-				{
-					prefs.gameName = ""
-					prefs.gameNotes = ""
-				}
-				else
-				{
-					val p = GamePresets.all[which - 1]
-					prefs.gameName = p.name
-					prefs.gameNotes = p.notes
-				}
-				gameText.text = "🎮  " + prefs.gameName.ifEmpty { "Chung · tự nhận diện" }
-			}
-			.show()
+		startActivity(Intent(this, GameBookActivity::class.java))
 	}
 }

@@ -30,8 +30,6 @@ class DichSettingsActivity: AppCompatActivity()
 	private lateinit var groq: EditText
 	private lateinit var geminiModel: EditText
 	private lateinit var groqModel: EditText
-	private lateinit var gameName: EditText
-	private lateinit var gameNotes: EditText
 	private lateinit var speakSwitch: SwitchMaterial
 	private lateinit var muteSwitch: SwitchMaterial
 	private lateinit var originalSwitch: SwitchMaterial
@@ -57,6 +55,7 @@ class DichSettingsActivity: AppCompatActivity()
 
 		header("1. Mã dịch miễn phí")
 		note("Gemini: tối đa 3 mã, hết lượt mã này tự chuyển mã khác. Groq dùng dự phòng khi cả 3 mã Gemini hết lượt.")
+		button("🧭  Hướng dẫn lấy mã từng bước") { startActivity(Intent(this, KeyGuideActivity::class.java)) }
 		val keys = prefs.geminiKeys
 		gemini1 = field("Mã Gemini 1", keys.getOrElse(0) { "" }, secret = true)
 		gemini2 = field("Mã Gemini 2", keys.getOrElse(1) { "" }, secret = true)
@@ -72,10 +71,8 @@ class DichSettingsActivity: AppCompatActivity()
 		root.addView(testResult)
 
 		header("2. Game đang chơi")
-		note("Ghi tên nhân vật, cách xưng hô, thuật ngữ để bản dịch nhất quán.")
-		button("Chọn game có sẵn ghi chú") { pickPreset() }
-		gameName = field("Tên game", prefs.gameName)
-		gameNotes = field("Ghi chú cho game", prefs.gameNotes, multiline = true)
+		note("Tên nhân vật, giới tính, cách xưng hô, văn phong được lưu trong Sổ tay game.")
+		button("📒  Mở Sổ tay game") { startActivity(Intent(this, GameBookActivity::class.java)) }
 
 		header("3. Hiển thị & giọng đọc")
 		speakSwitch = switch("Đọc to phụ đề tiếng Việt", prefs.speak)
@@ -103,6 +100,17 @@ class DichSettingsActivity: AppCompatActivity()
 		button("Lưu") { save(); finish() }
 	}
 
+	override fun onResume()
+	{
+		super.onResume()
+		// có thể vừa nhập mã ở màn hình hướng dẫn
+		val keys = prefs.geminiKeys
+		gemini1.setText(keys.getOrElse(0) { "" })
+		gemini2.setText(keys.getOrElse(1) { "" })
+		gemini3.setText(keys.getOrElse(2) { "" })
+		groq.setText(prefs.groqKey)
+	}
+
 	override fun onPause()
 	{
 		super.onPause()
@@ -115,8 +123,6 @@ class DichSettingsActivity: AppCompatActivity()
 		prefs.groqKey = groq.text.toString()
 		prefs.geminiModel = geminiModel.text.toString()
 		prefs.groqModel = groqModel.text.toString()
-		prefs.gameName = gameName.text.toString()
-		prefs.gameNotes = gameNotes.text.toString()
 		prefs.speak = speakSwitch.isChecked
 		prefs.muteGame = muteSwitch.isChecked
 		prefs.showOriginal = originalSwitch.isChecked
@@ -137,19 +143,6 @@ class DichSettingsActivity: AppCompatActivity()
 			testResult.text = if(t != null) "✅ Dịch được: ${t.vietnamese}"
 				else "❌ Lỗi: ${translator.lastError ?: "không rõ"} – kiểm tra lại mã hoặc tên model."
 		}
-	}
-
-	private fun pickPreset()
-	{
-		val names = GamePresets.all.map { it.name }.toTypedArray()
-		MaterialAlertDialogBuilder(this)
-			.setTitle("Chọn game")
-			.setItems(names) { _, which ->
-				val p = GamePresets.all[which]
-				gameName.setText(p.name)
-				gameNotes.setText(p.notes)
-			}
-			.show()
 	}
 
 	// ---- dựng giao diện ----

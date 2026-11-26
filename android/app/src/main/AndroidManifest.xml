@@ -46,6 +46,12 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".dich.GameBookActivity"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity android:name=".dich.KeyGuideActivity"
+            android:windowSoftInputMode="adjustResize" />
+
         <activity android:name=".dich.DemoActivity"
             android:screenOrientation="portrait" />
 

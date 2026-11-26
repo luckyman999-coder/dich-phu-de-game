@@ -66,6 +66,16 @@ open class DichPrefs(context: Context)
 			.putFloat("r_l", v.left).putFloat("r_t", v.top)
 			.putFloat("r_r", v.right).putFloat("r_b", v.bottom).apply() }
 
+	/** tên nhân vật (chữ thường) → MALE/FEMALE, lấy từ Sổ tay game */
+	var speakerGenders: Map<String, String>
+		get() = try
+		{
+			val o = org.json.JSONObject(sp.getString("speaker_genders", "{}") ?: "{}")
+			o.keys().asSequence().associateWith { o.getString(it) }
+		}
+		catch(e: Exception) { emptyMap() }
+		set(v) { sp.edit().putString("speaker_genders", org.json.JSONObject(v as Map<*, *>).toString()).apply() }
+
 	var psnAccountId: String
 		get() = sp.getString("psn_account_id", "") ?: ""
 		set(v) { sp.edit().putString("psn_account_id", v).apply() }

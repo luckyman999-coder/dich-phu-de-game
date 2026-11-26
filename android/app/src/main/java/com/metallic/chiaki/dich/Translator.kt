@@ -47,7 +47,10 @@ class Translator(private val prefs: DichPrefs)
 		cache.get(text)?.let { return@withContext it }
 		val prompt = buildPrompt(text)
 		val json = tryGemini(prompt) ?: tryGroq(prompt) ?: return@withContext null
-		val result = parse(text, json) ?: return@withContext null
+		val parsed = parse(text, json) ?: return@withContext null
+		// Giới tính trong Sổ tay game được ưu tiên hơn AI đoán
+		val known = prefs.speakerGenders[parsed.speaker.lowercase()]
+		val result = if(known != null) parsed.copy(gender = runCatching { Gender.valueOf(known) }.getOrDefault(parsed.gender)) else parsed
 		cache.put(text, result)
 		synchronized(history) {
 			history.addLast(text to result.vietnamese)
