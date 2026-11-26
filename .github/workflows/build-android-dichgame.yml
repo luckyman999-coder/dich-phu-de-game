@@ -5,6 +5,9 @@ on:
     branches: [ main, master, dichgame ]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -61,3 +64,13 @@ jobs:
         with:
           name: Dich-Game-PS5-Android
           path: out/Dich-Game-PS5-Android.apk
+
+      - name: Đăng bản tải về (Release "android-moi-nhat")
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: android-moi-nhat
+          name: Bản Android mới nhất
+          prerelease: true
+          make_latest: false
+          body: Bản build tự động từ commit ${{ github.sha }}. Tải file Dich-Game-PS5-Android.apk về điện thoại Android để cài.
+          files: out/Dich-Game-PS5-Android.apk
