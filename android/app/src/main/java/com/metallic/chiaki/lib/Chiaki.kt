@@ -72,7 +72,7 @@ data class ConnectInfo(
 	val videoProfile: ConnectVideoProfile
 ): Parcelable
 
-/** Dịch Phụ Đề Game: tắt/bật tiếng game phát trên điện thoại */
+/** Dịch Game: tắt/bật tiếng game phát trên điện thoại */
 object ChiakiAudio
 {
 	fun setMuted(muted: Boolean) = ChiakiNative.setAudioMuted(muted)

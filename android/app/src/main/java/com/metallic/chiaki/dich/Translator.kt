@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: LicenseRef-AGPL-3.0-only-OpenSSL
-// Dịch Phụ Đề Game - gọi Gemini (xoay vòng nhiều mã) rồi Groq dự phòng
+// Dịch Game - gọi Gemini (xoay vòng nhiều mã) rồi Groq dự phòng
 
 package com.metallic.chiaki.dich
 

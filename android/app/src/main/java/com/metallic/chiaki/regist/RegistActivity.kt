@@ -69,7 +69,7 @@ class RegistActivity: AppCompatActivity(), RevealActivity
 
 		binding.registButton.setOnClickListener { doRegist() }
 
-		// Dịch Phụ Đề Game: đăng nhập PSN để tự điền Account ID
+		// Dịch Game: đăng nhập PSN để tự điền Account ID
 		binding.psnLoginButton.setOnClickListener {
 			psnLoginLauncher.launch(Intent(this, com.metallic.chiaki.dich.PsnLoginActivity::class.java))
 		}

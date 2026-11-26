@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: LicenseRef-AGPL-3.0-only-OpenSSL
-// Dịch Phụ Đề Game - màn hình chính một chạm: BẮT ĐẦU CHƠI
+// Dịch Game - màn hình chính một chạm: BẮT ĐẦU CHƠI
 
 package com.metallic.chiaki.dich
 
@@ -35,8 +35,16 @@ class HomeActivity: AppCompatActivity()
 	companion object
 	{
 		private const val SEARCH_TIMEOUT_MS = 10_000L
-		private val PURPLE = Color.rgb(108, 99, 255)
-		private val PURPLE_2 = Color.rgb(139, 92, 246)
+		// Bảng màu riêng của Dịch Game: nền tối, nhấn xanh ngọc
+		val BG = Color.rgb(14, 17, 22)
+		val CARD = Color.rgb(24, 28, 36)
+		val STROKE = Color.rgb(40, 46, 58)
+		val TEXT = Color.rgb(236, 239, 244)
+		val MUTED = Color.rgb(140, 148, 162)
+		val ACCENT = Color.rgb(45, 212, 167)
+		val GREEN = Color.rgb(34, 197, 94)
+		val AMBER = Color.rgb(245, 180, 40)
+		val BLUE = Color.rgb(96, 165, 250)
 	}
 
 	private lateinit var prefs: DichPrefs
@@ -48,6 +56,8 @@ class HomeActivity: AppCompatActivity()
 	private lateinit var gameText: TextView
 	private lateinit var startButton: TextView
 	private lateinit var startSub: TextView
+	private lateinit var consoleName: TextView
+	private lateinit var checklist: LinearLayout
 
 	private val handler = Handler(Looper.getMainLooper())
 	private var searching = false
@@ -78,7 +88,7 @@ class HomeActivity: AppCompatActivity()
 	{
 		super.onResume()
 		viewModel.discoveryManager.active = true
-		gameText.text = prefs.gameName.ifEmpty { "Chung · Tự động" } + "  ›"
+		gameText.text = "🎮  " + prefs.gameName.ifEmpty { "Chung · tự nhận diện" }
 		updateStatus()
 	}
 
@@ -214,131 +224,204 @@ class HomeActivity: AppCompatActivity()
 	private fun updateStatus()
 	{
 		val registered = hosts.filter { it.isRegistered }
-		val online = registered.any { it is DiscoveredDisplayHost && it.discoveredHost.state == DiscoveryHost.State.READY }
+		val online = registered.firstOrNull { it is DiscoveredDisplayHost && it.discoveredHost.state == DiscoveryHost.State.READY }
 		val (color, text) = when
 		{
-			online -> Color.rgb(34, 197, 94) to "Máy chơi game sẵn sàng"
-			registered.isNotEmpty() -> Color.rgb(234, 179, 8) to "Máy chơi game đang nghỉ hoặc tắt"
-			hosts.isNotEmpty() -> Color.rgb(59, 130, 246) to "Tìm thấy máy, chưa ghép đôi"
-			else -> Color.rgb(156, 163, 175) to "Chưa kết nối máy chơi game"
+			online != null -> GREEN to "Sẵn sàng · cùng Wi-Fi"
+			registered.isNotEmpty() -> AMBER to "Đang nghỉ hoặc tắt · bấm Chơi để đánh thức"
+			hosts.isNotEmpty() -> BLUE to "Tìm thấy máy · chưa ghép đôi"
+			else -> MUTED to "Chưa thấy máy chơi game"
 		}
 		(statusDot.background as GradientDrawable).setColor(color)
 		statusText.text = text
+		consoleName.text = (online ?: registered.firstOrNull() ?: hosts.firstOrNull())?.name ?: "Máy chơi game của bạn"
+		refreshChecklist()
 	}
 
-	// ---------------- giao diện ----------------
+	private fun refreshChecklist()
+	{
+		if(!::checklist.isInitialized) return
+		checklist.removeAllViews()
+		val paired = hosts.any { it.isRegistered }
+		addCheck("Mã dịch AI", prefs.hasAnyKey, if(prefs.hasAnyKey) "${prefs.geminiKeys.size} mã Gemini" + (if(prefs.groqKey.isNotEmpty()) " + Groq" else "") else "Thêm mã miễn phí") {
+			startActivity(Intent(this, DichSettingsActivity::class.java))
+		}
+		addCheck("Tài khoản PSN", prefs.psnAccountId.isNotEmpty(), if(prefs.psnAccountId.isNotEmpty()) "Đã lấy Account ID" else "Đăng nhập để ghép đôi") {
+			psnLogin.launch(Intent(this, PsnLoginActivity::class.java))
+		}
+		addCheck("Ghép đôi máy chơi game", paired, if(paired) "Đã ghép đôi" else "Bấm Chơi để tự tìm và ghép đôi") {
+			onStartPressed()
+		}
+	}
+
+	private fun addCheck(title: String, ok: Boolean, sub: String, onClick: () -> Unit)
+	{
+		val row = LinearLayout(this).apply {
+			gravity = Gravity.CENTER_VERTICAL
+			setPadding(px(14), px(12), px(14), px(12))
+			setOnClickListener { onClick() }
+		}
+		row.addView(TextView(this).apply {
+			text = if(ok) "✓" else "!"
+			textSize = 15f
+			setTypeface(typeface, Typeface.BOLD)
+			gravity = Gravity.CENTER
+			setTextColor(if(ok) BG else Color.BLACK)
+			background = GradientDrawable().apply { shape = GradientDrawable.OVAL; setColor(if(ok) ACCENT else AMBER) }
+		}, LinearLayout.LayoutParams(px(26), px(26)).apply { marginEnd = px(12) })
+		val texts = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+		texts.addView(TextView(this).apply { text = title; textSize = 15f; setTextColor(TEXT) })
+		texts.addView(TextView(this).apply { text = sub; textSize = 13f; setTextColor(MUTED) })
+		row.addView(texts, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
+		row.addView(TextView(this).apply { text = "›"; textSize = 20f; setTextColor(MUTED) })
+		checklist.addView(row)
+	}
+
+	// ---------------- giao diện (nền tối, thẻ máy chơi game) ----------------
+
+	private fun card(): LinearLayout = LinearLayout(this).apply {
+		orientation = LinearLayout.VERTICAL
+		background = GradientDrawable().apply { cornerRadius = px(20).toFloat(); setColor(CARD); setStroke(px(1), STROKE) }
+	}
+
+	private fun sectionTitle(t: String) = TextView(this).apply {
+		text = t
+		textSize = 13f
+		setTextColor(MUTED)
+		setPadding(px(4), px(24), 0, px(8))
+	}
 
 	private fun buildUi()
 	{
-		window.statusBarColor = Color.rgb(238, 240, 255)
-		val scroll = ScrollView(this).apply { setBackgroundColor(Color.rgb(238, 240, 255)); isFillViewport = true }
+		window.statusBarColor = BG
+		window.navigationBarColor = BG
+		val scroll = ScrollView(this).apply { setBackgroundColor(BG); isFillViewport = true }
 		val root = LinearLayout(this).apply {
 			orientation = LinearLayout.VERTICAL
 			setPadding(px(20), px(20), px(20), px(32))
 		}
 		scroll.addView(root)
 
-		// tiêu đề + chấm trạng thái + bánh răng
+		// thanh trên: logo chữ + cài đặt
 		val header = LinearLayout(this).apply { gravity = Gravity.CENTER_VERTICAL }
 		header.addView(TextView(this).apply {
-			text = "Dịch Phụ Đề Game"
-			textSize = 24f
+			text = "Dịch"
+			textSize = 22f
 			setTypeface(typeface, Typeface.BOLD)
-			setTextColor(Color.rgb(17, 24, 39))
-		}, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
-		statusDot = View(this).apply { background = GradientDrawable().apply { shape = GradientDrawable.OVAL; setColor(Color.GRAY) } }
-		header.addView(statusDot, LinearLayout.LayoutParams(px(12), px(12)).apply { marginEnd = px(14) })
+			setTextColor(TEXT)
+		})
+		header.addView(TextView(this).apply {
+			text = "Game"
+			textSize = 22f
+			setTypeface(typeface, Typeface.BOLD)
+			setTextColor(BG)
+			setPadding(px(8), 0, px(8), 0)
+			background = GradientDrawable().apply { cornerRadius = px(8).toFloat(); setColor(ACCENT) }
+		}, LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { marginStart = px(6) })
+		header.addView(View(this), LinearLayout.LayoutParams(0, 1, 1f))
 		header.addView(ImageButton(this).apply {
 			setImageResource(com.metallic.chiaki.R.drawable.ic_settings)
-			setColorFilter(Color.rgb(17, 24, 39))
+			setColorFilter(TEXT)
 			background = null
 			contentDescription = "Cài đặt"
 			setOnClickListener { startActivity(Intent(this@HomeActivity, DichSettingsActivity::class.java)) }
 		}, LinearLayout.LayoutParams(px(40), px(40)))
 		root.addView(header)
-
-		// chọn game
-		gameText = TextView(this).apply {
-			textSize = 15f
-			setTextColor(Color.rgb(75, 85, 99))
+		root.addView(TextView(this).apply {
+			text = "Phụ đề và giọng đọc tiếng Việt cho game PS5"
+			textSize = 14f
+			setTextColor(MUTED)
 			setPadding(0, px(4), 0, 0)
-			setOnClickListener { pickGame() }
-		}
-		root.addView(gameText)
-		statusText = TextView(this).apply { textSize = 13f; setTextColor(Color.rgb(107, 114, 128)) }
-		root.addView(statusText)
+		})
 
-		// nút tròn BẮT ĐẦU CHƠI
-		val circleSize = px(230)
-		val circle = LinearLayout(this).apply {
+		// thẻ máy chơi game
+		val console = card().apply { setPadding(px(18), px(18), px(18), px(18)) }
+		val top = LinearLayout(this).apply { gravity = Gravity.CENTER_VERTICAL }
+		top.addView(TextView(this).apply {
+			text = "PS5"
+			textSize = 14f
+			setTypeface(typeface, Typeface.BOLD)
+			setTextColor(TEXT)
+			gravity = Gravity.CENTER
+			background = GradientDrawable().apply { cornerRadius = px(12).toFloat(); setColor(STROKE) }
+		}, LinearLayout.LayoutParams(px(52), px(52)).apply { marginEnd = px(14) })
+		val info = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+		consoleName = TextView(this).apply { textSize = 17f; setTypeface(typeface, Typeface.BOLD); setTextColor(TEXT) }
+		info.addView(consoleName)
+		val statusRow = LinearLayout(this).apply { gravity = Gravity.CENTER_VERTICAL; setPadding(0, px(4), 0, 0) }
+		statusDot = View(this).apply { background = GradientDrawable().apply { shape = GradientDrawable.OVAL; setColor(MUTED) } }
+		statusRow.addView(statusDot, LinearLayout.LayoutParams(px(8), px(8)).apply { marginEnd = px(6) })
+		statusText = TextView(this).apply { textSize = 13f; setTextColor(MUTED) }
+		statusRow.addView(statusText)
+		info.addView(statusRow)
+		top.addView(info, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
+		console.addView(top)
+
+		val play = LinearLayout(this).apply {
 			orientation = LinearLayout.VERTICAL
 			gravity = Gravity.CENTER
-			background = GradientDrawable(GradientDrawable.Orientation.TL_BR, intArrayOf(PURPLE, PURPLE_2)).apply { shape = GradientDrawable.OVAL }
-			elevation = px(8).toFloat()
+			setPadding(0, px(14), 0, px(14))
+			background = GradientDrawable().apply { cornerRadius = px(14).toFloat(); setColor(ACCENT) }
 			isClickable = true
-			isFocusable = true
 		}
 		startButton = TextView(this).apply {
-			text = "BẮT ĐẦU CHƠI"
-			textSize = 26f
+			text = "▶  CHƠI VÀ DỊCH"
+			textSize = 18f
 			setTypeface(typeface, Typeface.BOLD)
-			setTextColor(Color.WHITE)
+			setTextColor(BG)
 			gravity = Gravity.CENTER
 		}
 		startSub = TextView(this).apply {
 			text = "kết nối & dịch"
-			textSize = 15f
-			setTextColor(Color.argb(220, 255, 255, 255))
+			textSize = 13f
+			setTextColor(Color.argb(170, 0, 0, 0))
 			gravity = Gravity.CENTER
-			setPadding(px(16), px(4), px(16), 0)
 		}
-		circle.addView(startButton)
-		circle.addView(startSub)
-		circle.setOnClickListener { if(startButton.isEnabled) onStartPressed() }
-		root.addView(circle, LinearLayout.LayoutParams(circleSize, circleSize).apply {
-			gravity = Gravity.CENTER_HORIZONTAL
-			topMargin = px(40)
-			bottomMargin = px(28)
-		})
-
-		// nút Xem thử
-		root.addView(TextView(this).apply {
-			text = "▶  Xem thử – không cần máy chơi game"
-			textSize = 15f
-			setTextColor(PURPLE)
+		play.addView(startButton)
+		play.addView(startSub)
+		play.setOnClickListener { if(startButton.isEnabled) onStartPressed() }
+		console.addView(play, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { topMargin = px(18) })
+		console.addView(TextView(this).apply {
+			text = "Chưa có máy? Xem thử bằng cảnh mẫu"
+			textSize = 14f
+			setTextColor(ACCENT)
 			gravity = Gravity.CENTER
-			setPadding(px(16), px(12), px(16), px(12))
-			background = GradientDrawable().apply { cornerRadius = px(24).toFloat(); setColor(Color.WHITE) }
+			setPadding(0, px(14), 0, 0)
 			setOnClickListener { startActivity(Intent(this@HomeActivity, DemoActivity::class.java)) }
-		}, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT))
+		})
+		root.addView(console, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { topMargin = px(20) })
 
-		// thẻ mẹo
-		val tips = LinearLayout(this).apply {
-			orientation = LinearLayout.VERTICAL
+		// game đang chơi
+		root.addView(sectionTitle("GAME ĐANG CHƠI"))
+		val gameCard = card().apply {
 			setPadding(px(16), px(14), px(16), px(14))
-			background = GradientDrawable().apply { cornerRadius = px(16).toFloat(); setColor(Color.argb(200, 255, 255, 255)) }
+			setOnClickListener { pickGame() }
 		}
-		listOf(
-			"Lần đầu: bấm BẮT ĐẦU CHƠI → đăng nhập PSN → nhập mã ghép đôi hiện trên máy chơi game",
-			"Điện thoại và máy chơi game nên cùng Wi-Fi 5GHz cho hình mượt",
-			"Trong game: vuốt mép màn hình → \"Chỉnh khung phụ đề\" để kéo khung trùm phụ đề",
-			"Cắm sạc khi chơi lâu"
-		).forEach { tip ->
-			tips.addView(TextView(this).apply {
-				text = "💡  $tip"
-				textSize = 14f
-				setTextColor(Color.rgb(75, 85, 99))
-				setPadding(0, px(4), 0, px(4))
-			})
-		}
-		root.addView(tips, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { topMargin = px(20) })
+		val gameRow = LinearLayout(this).apply { gravity = Gravity.CENTER_VERTICAL }
+		gameText = TextView(this).apply { textSize = 16f; setTextColor(TEXT) }
+		gameRow.addView(gameText, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
+		gameRow.addView(TextView(this).apply { text = "Đổi"; textSize = 14f; setTextColor(ACCENT) })
+		gameCard.addView(gameRow)
+		gameCard.addView(TextView(this).apply {
+			text = "Chọn đúng game để AI giữ tên nhân vật và cách xưng hô"
+			textSize = 13f
+			setTextColor(MUTED)
+			setPadding(0, px(4), 0, 0)
+		})
+		root.addView(gameCard)
+
+		// danh sách việc cần làm
+		root.addView(sectionTitle("CHUẨN BỊ"))
+		checklist = card()
+		root.addView(checklist)
 
 		setContentView(scroll)
+		refreshChecklist()
 	}
 
 	private fun pickGame()
 	{
-		val names = arrayOf("Chung · Tự động") + GamePresets.all.map { it.name }.toTypedArray()
+		val names = arrayOf("Chung · tự nhận diện") + GamePresets.all.map { it.name }.toTypedArray()
 		MaterialAlertDialogBuilder(this)
 			.setTitle("Đang chơi game nào?")
 			.setItems(names) { _, which ->
@@ -353,7 +436,7 @@ class HomeActivity: AppCompatActivity()
 					prefs.gameName = p.name
 					prefs.gameNotes = p.notes
 				}
-				gameText.text = prefs.gameName.ifEmpty { "Chung · Tự động" } + "  ›"
+				gameText.text = "🎮  " + prefs.gameName.ifEmpty { "Chung · tự nhận diện" }
 			}
 			.show()
 	}

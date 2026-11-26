@@ -19,7 +19,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
-        <!-- Dịch Phụ Đề Game: phụ đề tiếng Việt đè lên vùng phụ đề gốc -->
+        <!-- Dịch Game: phụ đề tiếng Việt đè lên vùng phụ đề gốc -->
         <TextView
             android:id="@+id/dichSubtitleText"
             android:layout_width="wrap_content"
@@ -41,7 +41,7 @@
             android:layout_height="match_parent"/>
     </com.metallic.chiaki.stream.AspectRatioFrameLayout>
 
-    <!-- Dịch Phụ Đề Game: thông báo lỗi/trạng thái -->
+    <!-- Dịch Game: thông báo lỗi/trạng thái -->
     <TextView
         android:id="@+id/dichStatusText"
         android:layout_width="wrap_content"

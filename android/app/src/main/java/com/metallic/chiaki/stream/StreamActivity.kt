@@ -60,7 +60,7 @@ class StreamActivity : AppCompatActivity()
 
 	private val uiVisibilityHandler = Handler(Looper.getMainLooper())
 
-	// Dịch Phụ Đề Game
+	// Dịch Game
 	private lateinit var dichPrefs: DichPrefs
 	private lateinit var translator: Translator
 	private lateinit var speaker: Speaker
@@ -202,7 +202,7 @@ class StreamActivity : AppCompatActivity()
 		}
 	}
 
-	// ---------------- Dịch Phụ Đề Game ----------------
+	// ---------------- Dịch Game ----------------
 
 	private fun setupDich()
 	{

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: LicenseRef-AGPL-3.0-only-OpenSSL
-// Dịch Phụ Đề Game - đăng nhập PSN trong app để lấy Account ID (dùng ghép đôi PS5)
+// Dịch Game - đăng nhập PSN trong app để lấy Account ID (dùng ghép đôi PS5)
 // Luồng giống chiaki-ng bản máy tính (gui/src/psnaccountid.cpp)
 
 package com.metallic.chiaki.dich

@@ -1,4 +1,4 @@
-# Dịch Game PS5 – bản Android (giai đoạn 1)
+# Dịch Game – bản Android (giai đoạn 1)
 
 Fork từ [chiaki-ng](https://github.com/streetpea/chiaki-ng) (giấy phép AGPL-3.0, nên mã nguồn bản sửa cũng phải công khai nếu phát hành).
 

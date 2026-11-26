@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: LicenseRef-AGPL-3.0-only-OpenSSL
-// Dịch Phụ Đề Game - chế độ Xem thử: cảnh mẫu có phụ đề tiếng Anh, chạy thật OCR → dịch → đọc
+// Dịch Game - chế độ Xem thử: cảnh mẫu có phụ đề tiếng Anh, chạy thật OCR → dịch → đọc
 // Không cần máy chơi game, không cần mã dịch (có bản dịch dự phòng cho cảnh mẫu)
 
 package com.metallic.chiaki.dich

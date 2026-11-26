@@ -1,4 +1,4 @@
-name: Build Android – Dịch Game PS5
+name: Build Android – Dịch Game
 
 on:
   push:
@@ -57,13 +57,13 @@ jobs:
       - name: Đổi tên APK
         run: |
           mkdir -p out
-          cp android/app/build/outputs/apk/debug/*.apk out/Dich-Game-PS5-Android.apk
+          cp android/app/build/outputs/apk/debug/*.apk out/Dich-Game-Android.apk
           ls -la out
 
       - uses: actions/upload-artifact@v4
         with:
-          name: Dich-Game-PS5-Android
-          path: out/Dich-Game-PS5-Android.apk
+          name: Dich-Game-Android
+          path: out/Dich-Game-Android.apk
 
       - name: Đăng bản tải về (Release "android-moi-nhat")
         uses: softprops/action-gh-release@v2
@@ -72,5 +72,5 @@ jobs:
           name: Bản Android mới nhất
           prerelease: true
           make_latest: false
-          body: Bản build tự động từ commit ${{ github.sha }}. Tải file Dich-Game-PS5-Android.apk về điện thoại Android để cài.
-          files: out/Dich-Game-PS5-Android.apk
+          body: Bản build tự động từ commit ${{ github.sha }}. Tải file Dich-Game-Android.apk về điện thoại Android để cài.
+          files: out/Dich-Game-Android.apk

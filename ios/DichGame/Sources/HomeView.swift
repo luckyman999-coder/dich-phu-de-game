@@ -1,19 +1,25 @@
 import SwiftUI
 
 extension Color {
-    static let accentPurple = Color(red: 0.42, green: 0.39, blue: 1.0)
-    static let accentPurple2 = Color(red: 0.55, green: 0.36, blue: 0.96)
-    static let homeBg = Color(red: 0.93, green: 0.94, blue: 1.0)
+    // Bảng màu riêng của Dịch Game: nền tối, nhấn xanh ngọc
+    static let dgBg = Color(red: 14/255, green: 17/255, blue: 22/255)
+    static let dgCard = Color(red: 24/255, green: 28/255, blue: 36/255)
+    static let dgStroke = Color(red: 40/255, green: 46/255, blue: 58/255)
+    static let dgText = Color(red: 236/255, green: 239/255, blue: 244/255)
+    static let dgMuted = Color(red: 140/255, green: 148/255, blue: 162/255)
+    static let dgAccent = Color(red: 45/255, green: 212/255, blue: 167/255)
+    static let dgAmber = Color(red: 245/255, green: 180/255, blue: 40/255)
+    static let accentPurple = dgAccent
 }
 
 @main
 struct DichGameApp: App {
     var body: some Scene {
-        WindowGroup { HomeView() }
+        WindowGroup { HomeView().preferredColorScheme(.dark) }
     }
 }
 
-/// Màn hình chính một chạm (giống HomeActivity bên Android)
+/// Màn hình chính: thẻ máy chơi game + game đang chơi + danh sách chuẩn bị
 struct HomeView: View {
     @ObservedObject var prefs = Prefs.shared
     @State private var showSettings = false
@@ -29,63 +35,86 @@ struct HomeView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
-                HStack {
-                    Text("Dịch Phụ Đề Game").font(.system(size: 26, weight: .bold)).foregroundColor(Color(white: 0.07))
+                HStack(spacing: 6) {
+                    Text("Dịch").font(.system(size: 24, weight: .bold)).foregroundColor(.dgText)
+                    Text("Game").font(.system(size: 24, weight: .bold)).foregroundColor(.dgBg)
+                        .padding(.horizontal, 8).background(RoundedRectangle(cornerRadius: 8).fill(Color.dgAccent))
                     Spacer()
-                    Circle().fill(Color.gray).frame(width: 12, height: 12).padding(.trailing, 10)
                     Button { showSettings = true } label: {
-                        Image(systemName: "gearshape.fill").font(.title2).foregroundColor(Color(white: 0.07))
+                        Image(systemName: "gearshape").font(.title2).foregroundColor(.dgText)
                     }
                     .accessibilityLabel("Cài đặt")
                 }
-                Button { showGamePicker = true } label: {
-                    Text("🎮 \(prefs.gameName.isEmpty ? "Chung · Tự động" : prefs.gameName)  ›")
-                        .font(.subheadline).foregroundColor(Color(white: 0.35))
-                }
-                .padding(.top, 4)
+                Text("Phụ đề và giọng đọc tiếng Việt cho game PS5")
+                    .font(.subheadline).foregroundColor(.dgMuted).padding(.top, 4)
 
-                Button(action: start) {
-                    VStack(spacing: 4) {
-                        Text("BẮT ĐẦU CHƠI").font(.system(size: 26, weight: .bold))
-                        Text("kết nối & dịch").font(.subheadline).opacity(0.85)
+                // thẻ máy chơi game
+                VStack(spacing: 0) {
+                    HStack(spacing: 14) {
+                        Text("PS5").font(.subheadline.bold()).foregroundColor(.dgText)
+                            .frame(width: 52, height: 52)
+                            .background(RoundedRectangle(cornerRadius: 12).fill(Color.dgStroke))
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Máy chơi game của bạn").font(.headline).foregroundColor(.dgText)
+                            HStack(spacing: 6) {
+                                Circle().fill(Color.dgMuted).frame(width: 8, height: 8)
+                                Text("Chưa thấy máy chơi game").font(.footnote).foregroundColor(.dgMuted)
+                            }
+                        }
+                        Spacer()
                     }
-                    .foregroundColor(.white)
-                    .frame(width: 230, height: 230)
-                    .background(Circle().fill(LinearGradient(colors: [.accentPurple, .accentPurple2], startPoint: .topLeading, endPoint: .bottomTrailing)))
-                    .shadow(color: .accentPurple.opacity(0.35), radius: 16, y: 8)
-                }
-                .frame(maxWidth: .infinity)
-                .padding(.top, 40).padding(.bottom, 28)
-
-                Button { showDemo = true } label: {
-                    Label("Xem thử – không cần máy chơi game", systemImage: "play.circle.fill")
-                        .font(.body.weight(.medium)).foregroundColor(.accentPurple)
-                        .frame(maxWidth: .infinity).padding(.vertical, 12)
-                        .background(Capsule().fill(Color.white))
-                }
-
-                VStack(alignment: .leading, spacing: 8) {
-                    ForEach([
-                        "Lần đầu: bấm BẮT ĐẦU CHƠI → đăng nhập PSN → nhập mã ghép đôi hiện trên máy chơi game",
-                        "iPhone và máy chơi game nên cùng Wi-Fi 5GHz cho hình mượt",
-                        "Trong game: bấm nút tròn → \"Chọn khung dịch\" để kéo khung trùm phụ đề",
-                        "Cắm sạc khi chơi lâu"
-                    ], id: \.self) { tip in
-                        Text("💡  \(tip)").font(.subheadline).foregroundColor(Color(white: 0.3))
+                    Button(action: start) {
+                        VStack(spacing: 2) {
+                            Text("▶  CHƠI VÀ DỊCH").font(.system(size: 18, weight: .bold))
+                            Text("kết nối & dịch").font(.footnote).opacity(0.7)
+                        }
+                        .foregroundColor(.dgBg)
+                        .frame(maxWidth: .infinity).padding(.vertical, 14)
+                        .background(RoundedRectangle(cornerRadius: 14).fill(Color.dgAccent))
                     }
+                    .padding(.top, 18)
+                    Button("Chưa có máy? Xem thử bằng cảnh mẫu") { showDemo = true }
+                        .font(.subheadline).foregroundColor(.dgAccent).padding(.top, 14)
                 }
-                .padding(16)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(RoundedRectangle(cornerRadius: 16).fill(Color.white.opacity(0.8)))
+                .padding(18)
+                .background(RoundedRectangle(cornerRadius: 20).fill(Color.dgCard))
+                .overlay(RoundedRectangle(cornerRadius: 20).stroke(Color.dgStroke))
                 .padding(.top, 20)
+
+                section("GAME ĐANG CHƠI")
+                Button { showGamePicker = true } label: {
+                    VStack(alignment: .leading, spacing: 4) {
+                        HStack {
+                            Text("🎮  \(prefs.gameName.isEmpty ? "Chung · tự nhận diện" : prefs.gameName)").foregroundColor(.dgText)
+                            Spacer()
+                            Text("Đổi").foregroundColor(.dgAccent)
+                        }
+                        Text("Chọn đúng game để AI giữ tên nhân vật và cách xưng hô")
+                            .font(.footnote).foregroundColor(.dgMuted).multilineTextAlignment(.leading)
+                    }
+                    .padding(16)
+                    .background(RoundedRectangle(cornerRadius: 20).fill(Color.dgCard))
+                    .overlay(RoundedRectangle(cornerRadius: 20).stroke(Color.dgStroke))
+                }
+
+                section("CHUẨN BỊ")
+                VStack(spacing: 0) {
+                    checkRow("Mã dịch AI", ok: prefs.hasAnyKey,
+                             sub: prefs.hasAnyKey ? "\(prefs.cleanGeminiKeys.count) mã Gemini" : "Thêm mã miễn phí") { showSettings = true }
+                    checkRow("Tài khoản PSN", ok: !prefs.psnAccountId.isEmpty,
+                             sub: prefs.psnAccountId.isEmpty ? "Đăng nhập để ghép đôi" : "Đã lấy Account ID") { start() }
+                    checkRow("Ghép đôi máy chơi game", ok: false, sub: "Bấm Chơi để tự tìm và ghép đôi") { start() }
+                }
+                .background(RoundedRectangle(cornerRadius: 20).fill(Color.dgCard))
+                .overlay(RoundedRectangle(cornerRadius: 20).stroke(Color.dgStroke))
             }
             .padding(20)
         }
-        .background(Color.homeBg.ignoresSafeArea())
+        .background(Color.dgBg.ignoresSafeArea())
         .sheet(isPresented: $showSettings) { SettingsView() }
         .fullScreenCover(isPresented: $showDemo) { DemoView() }
         .confirmationDialog("Đang chơi game nào?", isPresented: $showGamePicker, titleVisibility: .visible) {
-            Button("Chung · Tự động") { prefs.gameName = ""; prefs.gameNotes = "" }
+            Button("Chung · tự nhận diện") { prefs.gameName = ""; prefs.gameNotes = "" }
             ForEach(GamePresets.all) { p in
                 Button(p.name) { prefs.gameName = p.name; prefs.gameNotes = p.notes }
             }
@@ -102,6 +131,26 @@ struct HomeView: View {
                              message: Text("Kết nối máy chơi game trên iPhone đang được hoàn thiện. Trong lúc chờ, bấm \"Xem thử\" để trải nghiệm dịch phụ đề."),
                              dismissButton: .default(Text("Đã hiểu")))
             }
+        }
+    }
+
+    private func section(_ t: String) -> some View {
+        Text(t).font(.footnote).foregroundColor(.dgMuted).padding(.top, 24).padding(.bottom, 8).padding(.leading, 4)
+    }
+
+    private func checkRow(_ title: String, ok: Bool, sub: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack(spacing: 12) {
+                Text(ok ? "✓" : "!").font(.subheadline.bold()).foregroundColor(ok ? .dgBg : .black)
+                    .frame(width: 26, height: 26).background(Circle().fill(ok ? Color.dgAccent : Color.dgAmber))
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(title).foregroundColor(.dgText)
+                    Text(sub).font(.footnote).foregroundColor(.dgMuted)
+                }
+                Spacer()
+                Image(systemName: "chevron.right").foregroundColor(.dgMuted)
+            }
+            .padding(.horizontal, 14).padding(.vertical, 12)
         }
     }
 

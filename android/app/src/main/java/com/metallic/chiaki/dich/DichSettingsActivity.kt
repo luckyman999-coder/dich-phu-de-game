@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: LicenseRef-AGPL-3.0-only-OpenSSL
-// Dịch Phụ Đề Game - màn hình cài đặt (mã dịch, game, giọng đọc)
+// Dịch Game - màn hình cài đặt (mã dịch, game, giọng đọc)
 
 package com.metallic.chiaki.dich
 

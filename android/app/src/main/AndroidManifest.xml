@@ -36,7 +36,7 @@
                 />
         </provider>
 
-        <!-- Dịch Phụ Đề Game: màn hình chính một chạm -->
+        <!-- Dịch Game: màn hình chính một chạm -->
         <activity android:name=".dich.HomeActivity"
             android:screenOrientation="portrait"
             android:exported="true">
@@ -62,7 +62,7 @@
         <activity
             android:name=".settings.SettingsActivity" />
 
-        <!-- Dịch Phụ Đề Game -->
+        <!-- Dịch Game -->
         <activity
             android:name=".dich.DichSettingsActivity"
             android:windowSoftInputMode="adjustResize" />

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: LicenseRef-AGPL-3.0-only-OpenSSL
-// Dịch Phụ Đề Game - khung kéo/thả để chọn vùng phụ đề
+// Dịch Game - khung kéo/thả để chọn vùng phụ đề
 
 package com.metallic.chiaki.dich
 

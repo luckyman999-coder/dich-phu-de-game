@@ -1,4 +1,4 @@
-name: Build iOS – Dịch Phụ Đề Game
+name: Build iOS – Dịch Game
 
 on:
   push:

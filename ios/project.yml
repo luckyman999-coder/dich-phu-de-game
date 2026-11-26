@@ -17,7 +17,7 @@ targets:
     info:
       path: DichGame/Info.plist
       properties:
-        CFBundleDisplayName: Dịch Phụ Đề Game
+        CFBundleDisplayName: Dịch Game
         CFBundleDevelopmentRegion: vi
         UILaunchScreen: {}
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
