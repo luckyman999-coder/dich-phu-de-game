@@ -7,6 +7,8 @@ struct SettingsView: View {
     @State private var k2 = ""
     @State private var k3 = ""
     @State private var testResult = ""
+    @State private var showBook = false
+    @State private var showGuide = false
 
     var body: some View {
         NavigationStack {
@@ -18,6 +20,7 @@ struct SettingsView: View {
                     Link("Lấy mã Gemini (Google AI Studio)", destination: URL(string: "https://aistudio.google.com/apikey")!)
                     SecureField("Mã Groq (dự phòng)", text: $prefs.groqKey)
                     Link("Lấy mã Groq", destination: URL(string: "https://console.groq.com/keys")!)
+                    Button("🧭  Hướng dẫn lấy mã từng bước") { save(); showGuide = true }
                     Button("Lưu và dịch thử") { save(); test() }
                     if !testResult.isEmpty { Text(testResult).font(.footnote) }
                 } header: {
@@ -27,14 +30,7 @@ struct SettingsView: View {
                 }
 
                 Section("2. Game đang chơi") {
-                    Menu("Chọn game có sẵn ghi chú") {
-                        ForEach(GamePresets.all) { p in
-                            Button(p.name) { prefs.gameName = p.name; prefs.gameNotes = p.notes }
-                        }
-                    }
-                    TextField("Tên game", text: $prefs.gameName)
-                    TextField("Ghi chú: tên nhân vật, cách xưng hô…", text: $prefs.gameNotes, axis: .vertical)
-                        .lineLimit(3...8)
+                    Button("📒  Mở Sổ tay game") { showBook = true }
                 }
 
                 Section("3. Hiển thị và giọng đọc") {
@@ -57,6 +53,9 @@ struct SettingsView: View {
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) { Button("Xong") { save(); dismiss() } }
             }
+            .sheet(isPresented: $showBook) { GameBookView() }
+            .sheet(isPresented: $showGuide, onDismiss: reloadKeys) { KeyGuideView() }
+            .onAppear(perform: reloadKeys)
             .onAppear {
                 let ks = prefs.geminiKeys
                 k1 = ks.count > 0 ? ks[0] : ""
@@ -64,6 +63,13 @@ struct SettingsView: View {
                 k3 = ks.count > 2 ? ks[2] : ""
             }
         }
+    }
+
+    private func reloadKeys() {
+        let ks = prefs.geminiKeys
+        k1 = ks.count > 0 ? ks[0] : ""
+        k2 = ks.count > 1 ? ks[1] : ""
+        k3 = ks.count > 2 ? ks[2] : ""
     }
 
     private func save() {

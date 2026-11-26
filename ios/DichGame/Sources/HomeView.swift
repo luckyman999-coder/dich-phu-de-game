@@ -24,7 +24,9 @@ struct HomeView: View {
     @ObservedObject var prefs = Prefs.shared
     @State private var showSettings = false
     @State private var showDemo = false
-    @State private var showGamePicker = false
+    @State private var showGameBook = false
+    @State private var showKeyGuide = false
+    @ObservedObject var book = GameBook.shared
     @State private var alert: HomeAlert?
 
     enum HomeAlert: Identifiable {
@@ -82,12 +84,12 @@ struct HomeView: View {
                 .padding(.top, 20)
 
                 section("GAME ĐANG CHƠI")
-                Button { showGamePicker = true } label: {
+                Button { showGameBook = true } label: {
                     VStack(alignment: .leading, spacing: 4) {
                         HStack {
-                            Text("🎮  \(prefs.gameName.isEmpty ? "Chung · tự nhận diện" : prefs.gameName)").foregroundColor(.dgText)
+                            Text("🎮  " + (book.current.map { "\($0.name) · \($0.entries.count) mục" } ?? "Chung · tự nhận diện")).foregroundColor(.dgText)
                             Spacer()
-                            Text("Đổi").foregroundColor(.dgAccent)
+                            Text("Sổ tay ›").foregroundColor(.dgAccent)
                         }
                         Text("Chọn đúng game để AI giữ tên nhân vật và cách xưng hô")
                             .font(.footnote).foregroundColor(.dgMuted).multilineTextAlignment(.leading)
@@ -100,7 +102,9 @@ struct HomeView: View {
                 section("CHUẨN BỊ")
                 VStack(spacing: 0) {
                     checkRow("Mã dịch AI", ok: prefs.hasAnyKey,
-                             sub: prefs.hasAnyKey ? "\(prefs.cleanGeminiKeys.count) mã Gemini" : "Thêm mã miễn phí") { showSettings = true }
+                             sub: prefs.hasAnyKey ? "\(prefs.cleanGeminiKeys.count) mã Gemini" : "Lấy mã miễn phí – 2 phút") {
+                        if prefs.hasAnyKey { showSettings = true } else { showKeyGuide = true }
+                    }
                     checkRow("Tài khoản PSN", ok: !prefs.psnAccountId.isEmpty,
                              sub: prefs.psnAccountId.isEmpty ? "Đăng nhập để ghép đôi" : "Đã lấy Account ID") { start() }
                     checkRow("Ghép đôi máy chơi game", ok: false, sub: "Bấm Chơi để tự tìm và ghép đôi") { start() }
@@ -113,18 +117,14 @@ struct HomeView: View {
         .background(Color.dgBg.ignoresSafeArea())
         .sheet(isPresented: $showSettings) { SettingsView() }
         .fullScreenCover(isPresented: $showDemo) { DemoView() }
-        .confirmationDialog("Đang chơi game nào?", isPresented: $showGamePicker, titleVisibility: .visible) {
-            Button("Chung · tự nhận diện") { prefs.gameName = ""; prefs.gameNotes = "" }
-            ForEach(GamePresets.all) { p in
-                Button(p.name) { prefs.gameName = p.name; prefs.gameNotes = p.notes }
-            }
-        }
+        .sheet(isPresented: $showGameBook) { GameBookView() }
+        .sheet(isPresented: $showKeyGuide) { KeyGuideView() }
         .alert(item: $alert) { a in
             switch a {
             case .needKey:
                 return Alert(title: Text("Thêm mã dịch miễn phí"),
                              message: Text("Cần ít nhất 1 mã Gemini (miễn phí) để dịch. Có hướng dẫn lấy mã trong Cài đặt.\n\nMuốn xem thử trước thì bấm \"Xem thử\"."),
-                             primaryButton: .default(Text("Vào cài đặt")) { showSettings = true },
+                             primaryButton: .default(Text("Lấy mã ngay")) { showKeyGuide = true },
                              secondaryButton: .default(Text("Xem thử")) { showDemo = true })
             case .remotePlaySoon:
                 return Alert(title: Text("Sắp có"),

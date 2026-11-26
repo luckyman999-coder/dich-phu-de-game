@@ -123,6 +123,9 @@ final class SubtitleEngine: ObservableObject {
                 if t == nil { t = fallback?(text) }
             }
             if Task.isCancelled { return }
+            if let tt = t, let g = GameBook.shared.gender(forSpeaker: tt.speaker) {
+                t = Translation(original: tt.original, vietnamese: tt.vietnamese, speaker: tt.speaker, gender: g)
+            }
             if let t {
                 status = nil
                 current = t
