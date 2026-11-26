@@ -22,8 +22,11 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Python cho nanopb
-        run: pip install protobuf grpcio-tools
+      - name: protoc + Python cho nanopb
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq protobuf-compiler
+          pip install protobuf grpcio-tools
 
       - name: Cài NDK + CMake
         run: |
