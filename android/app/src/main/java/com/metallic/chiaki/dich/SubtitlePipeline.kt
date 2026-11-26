@@ -27,6 +27,8 @@ fun interface FrameSource
 /** Chụp hình game đang phát trên SurfaceView bằng PixelCopy */
 class SurfaceFrameSource(private val surfaceView: SurfaceView): FrameSource
 {
+	private val copyThread = HandlerThread("DichPixelCopy").apply { start() }
+	private val copyHandler = Handler(copyThread.looper)
 	private var bitmap: Bitmap? = null
 
 	override suspend fun capture(): Bitmap?

@@ -202,7 +202,7 @@ class DemoActivity: AppCompatActivity()
 		speaker = Speaker(this, prefs)
 		// Pipeline dùng vùng khung riêng của chế độ xem thử
 		val regionView = region
-		val demoPrefs = object: DemoRegionPrefs(this) { override val demoRegion: RectF get() = regionView.region }
+		val demoPrefs = object: DemoRegionPrefs(this@DemoActivity) { override val demoRegion: RectF get() = regionView.region }
 		pipeline = SubtitlePipeline(
 			frameSource = object: FrameSource {
 				override suspend fun capture(): Bitmap? = withContext(Dispatchers.Main) { scene.render() }
