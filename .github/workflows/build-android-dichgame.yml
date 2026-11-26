@@ -9,16 +9,16 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           submodules: recursive
 
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '17'
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
 
@@ -34,7 +34,19 @@ jobs:
         working-directory: android
         run: |
           chmod +x gradlew
-          ./gradlew --no-daemon assembleDebug
+          set -o pipefail
+          ./gradlew --no-daemon assembleDebug 2>&1 | tee build.log
+
+      - name: Báo lỗi build (annotation)
+        if: failure()
+        working-directory: android
+        run: |
+          grep -E "^e: |CMake Error|C/C\+\+: .*(error|Error)|error: " build.log | head -60 | while IFS= read -r line; do
+            echo "::error::${line}"
+          done
+          find app/.cxx -name "CMakeOutput.log" -o -name "CMakeError.log" | head -3 | xargs -r tail -n 30 | head -60 | while IFS= read -r line; do
+            echo "::warning::${line}"
+          done
 
       - name: Đổi tên APK
         run: |
