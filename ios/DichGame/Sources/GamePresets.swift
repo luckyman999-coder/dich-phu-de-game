@@ -1,0 +1,17 @@
+// Sinh tự động từ GamePresets.kt (Android) để 2 bản giống nhau
+struct GamePreset: Identifiable { let name: String; let notes: String; var id: String { name } }
+
+enum GamePresets {
+    static let all: [GamePreset] = [
+        GamePreset(name: "God of War Ragnarök", notes: "Giữ nguyên tên: Kratos, Atreus, Freya, Mimir, Thor, Odin, Brok, Sindri, Angrboda.\nKratos gọi Atreus là \"Boy\" → dịch \"nhóc\"/\"con\"; Kratos xưng \"ta\", gọi Atreus \"con\".\nAtreus gọi Kratos \"Father\" → \"Cha\", xưng \"con\".\nMimir nói kiểu dí dỏm, gọi Kratos \"brother\" → \"người anh em\".\nVăn phong thần thoại Bắc Âu, trang trọng nhưng gọn."),
+        GamePreset(name: "The Last of Us Part I / II", notes: "Giữ nguyên tên: Joel, Ellie, Tommy, Tess, Abby, Dina, Jesse, Lev.\nJoel – Ellie: Joel xưng \"tôi\"/\"chú\", gọi Ellie \"nhóc\"/\"cháu\"; Ellie xưng \"cháu\"/\"tôi\" tuỳ lúc, giọng tuổi teen, hay chửi thề nhẹ.\nFireflies → \"Đom Đóm\", Infected → \"Kẻ nhiễm\", Clicker giữ nguyên.\nVăn phong đời thường, ngắn, có chất bụi bặm."),
+        GamePreset(name: "Ghost of Tsushima", notes: "Giữ nguyên tên: Jin Sakai, Lord Shimura, Yuna, Taka, Khotun Khan, Ishikawa, Masako, Kenji.\nJin gọi Lord Shimura là \"Uncle\" → \"Chú\", xưng \"cháu\"; Shimura gọi Jin \"cháu\", xưng \"ta\".\nMongols → \"quân Mông Cổ\"; samurai, katana giữ nguyên; \"The Ghost\" → \"Bóng Ma\".\nVăn phong cổ trang Nhật, trang trọng."),
+        GamePreset(name: "Elden Ring", notes: "Giữ nguyên tên riêng: Melina, Ranni, Radahn, Malenia, Godrick, Margit, Marika, Erdtree (Cây Erd).\nTarnished → \"Kẻ Tàn Tạ\"; Lands Between → \"Vùng Đất Giữa\"; Great Rune → \"Đại Cổ Tự\".\nNPC nói giọng cổ: xưng \"ta\", gọi người chơi \"ngươi\"."),
+        GamePreset(name: "Black Myth: Wukong", notes: "Dùng tên Hán Việt quen thuộc theo Tây Du Ký: Sun Wukong → Tôn Ngộ Không, Destined One → Thiên Mệnh Nhân,\nZhu Bajie → Trư Bát Giới, Tang Sanzang → Đường Tăng, Erlang Shen → Nhị Lang Thần, Guanyin → Quan Âm, Yaoguai → Yêu quái.\nVăn phong cổ trang Trung Hoa: \"ta – ngươi\", \"lão phu\", \"tiểu tử\"."),
+        GamePreset(name: "Marvel's Spider-Man 2", notes: "Giữ nguyên tên: Peter Parker, Miles Morales, Mary Jane (MJ), Harry Osborn, Kraven, Venom, Ganke, Rio.\nPeter – Miles: Peter xưng \"anh\", gọi Miles \"em\"/\"nhóc\"; Miles gọi Peter \"anh\".\nVăn phong trẻ trung, hài hước, câu đùa ngắn gọn."),
+        GamePreset(name: "Red Dead Redemption 2", notes: "Giữ nguyên tên: Arthur Morgan, Dutch van der Linde, John Marston, Hosea, Sadie, Micah, Charles, Abigail.\nDutch gọi Arthur \"son\" → \"con trai\"/\"chú em\"; Arthur xưng \"tôi\".\nVăn phong miền Tây cao bồi, thô ráp, có chửi thề."),
+        GamePreset(name: "The Witcher 3", notes: "Giữ nguyên tên: Geralt, Ciri, Yennefer, Triss, Dandelion, Vesemir, Eredin.\nWitcher giữ nguyên; Wild Hunt → \"Săn Hoang\"; Geralt nói cộc lốc, xưng \"tôi\"/\"ta\".\nGeralt – Ciri: Ciri gọi Geralt \"Geralt\", Geralt gọi Ciri \"con\"/\"Ciri\"."),
+        GamePreset(name: "Final Fantasy VII Rebirth", notes: "Giữ nguyên tên: Cloud, Tifa, Aerith, Barret, Red XIII, Yuffie, Cait Sith, Sephiroth, Zack.\nShinra, SOLDIER, Materia giữ nguyên. Cloud nói ngắn, lạnh lùng, xưng \"tôi\".\nVăn phong anime JRPG, tự nhiên."),
+        GamePreset(name: "Resident Evil 4", notes: "Giữ nguyên tên: Leon, Ashley, Luis, Ada, Krauser, Salazar, Saddler, Hunnigan.\nLeon xưng \"tôi\", gọi Ashley \"cô\"; Ashley gọi Leon \"anh\".\nLos Illuminados giữ nguyên; Ganado → \"dân làng bị nhiễm\". Văn phong kinh dị hành động, câu ngắn."),
+    ]
+}

@@ -1,0 +1,32 @@
+name: DichGame
+options:
+  bundleIdPrefix: vn.dichgame
+  deploymentTarget:
+    iOS: "16.0"
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    MARKETING_VERSION: "1.0"
+    CURRENT_PROJECT_VERSION: "1"
+targets:
+  DichGame:
+    type: application
+    platform: iOS
+    sources:
+      - DichGame/Sources
+    info:
+      path: DichGame/Info.plist
+      properties:
+        CFBundleDisplayName: Dịch Phụ Đề Game
+        CFBundleDevelopmentRegion: vi
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
+        UIBackgroundModes: [audio]
+        NSLocalNetworkUsageDescription: Ứng dụng cần tìm máy chơi game trong mạng Wi-Fi nhà để kết nối Chơi từ xa.
+        NSBonjourServices: [_ps5._udp]
+        ITSAppUsesNonExemptEncryption: false
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: vn.dichgame.dichphude
+        TARGETED_DEVICE_FAMILY: "1,2"
+        ENABLE_PREVIEWS: YES

@@ -39,3 +39,5 @@ chiaki.conf
 .cache/
 *.vscode
 site/
+ios/DichGame.xcodeproj/
+ios/DichGame/Info.plist

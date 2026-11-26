@@ -1,0 +1,28 @@
+name: Build iOS – Dịch Phụ Đề Game
+
+on:
+  push:
+    branches: [ main ]
+    paths: [ 'ios/**', '.github/workflows/build-ios-dichgame.yml' ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cài XcodeGen
+        run: brew install xcodegen
+
+      - name: Tạo project Xcode
+        working-directory: ios
+        run: xcodegen generate
+
+      - name: Build cho iOS Simulator (kiểm tra biên dịch)
+        working-directory: ios
+        run: |
+          set -o pipefail
+          xcodebuild -project DichGame.xcodeproj -scheme DichGame \
+            -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' \
+            -configuration Debug CODE_SIGNING_ALLOWED=NO build | tail -80
