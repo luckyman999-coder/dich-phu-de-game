@@ -33,8 +33,11 @@ android {
         versionName "1.0.0"
         // Dịch Game: chỉ build cho điện thoại ARM (nhanh hơn, APK nhỏ hơn)
         ndk {
-            abiFilters 'arm64-v8a', 'armeabi-v7a'
+            // -PdichAbis=x86_64 khi chạy test trên máy ảo
+            def abis = project.findProperty("dichAbis")
+            if(abis) abiFilters(*abis.toString().split(",")) else abiFilters 'arm64-v8a', 'armeabi-v7a'
         }
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         externalNativeBuild {
             cmake {
                 arguments "-DCHIAKI_ENABLE_TESTS=OFF",
@@ -141,4 +144,7 @@ dependencies {
     implementation 'com.google.mlkit:text-recognition:16.0.1'
 
     testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test:runner:1.6.2'
+    androidTestImplementation 'androidx.test:core-ktx:1.6.1'
+    androidTestImplementation 'androidx.test.ext:junit:1.2.1'
 }
