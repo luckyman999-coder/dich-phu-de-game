@@ -26,6 +26,8 @@ struct HomeView: View {
     @State private var showDemo = false
     @State private var showGameBook = false
     @State private var showKeyGuide = false
+    @State private var showGuide = false
+    @AppStorage("guide_seen") private var guideSeen = false
     @ObservedObject var book = GameBook.shared
     @State private var alert: HomeAlert?
 
@@ -42,6 +44,11 @@ struct HomeView: View {
                     Text("Game").font(.system(size: 24, weight: .bold)).foregroundColor(.dgBg)
                         .padding(.horizontal, 8).background(RoundedRectangle(cornerRadius: 8).fill(Color.dgAccent))
                     Spacer()
+                    Button { showGuide = true } label: {
+                        Image(systemName: "questionmark.circle").font(.title2).foregroundColor(.dgText)
+                    }
+                    .accessibilityLabel("Hướng dẫn")
+                    .padding(.trailing, 6)
                     Button { showSettings = true } label: {
                         Image(systemName: "gearshape").font(.title2).foregroundColor(.dgText)
                     }
@@ -119,6 +126,8 @@ struct HomeView: View {
         .fullScreenCover(isPresented: $showDemo) { DemoView() }
         .sheet(isPresented: $showGameBook) { GameBookView() }
         .sheet(isPresented: $showKeyGuide) { KeyGuideView() }
+        .sheet(isPresented: $showGuide) { GuideView() }
+        .onAppear { if !guideSeen { guideSeen = true; showGuide = true } }
         .alert(item: $alert) { a in
             switch a {
             case .needKey:

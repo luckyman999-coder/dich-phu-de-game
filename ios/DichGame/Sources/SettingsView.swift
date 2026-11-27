@@ -9,6 +9,8 @@ struct SettingsView: View {
     @State private var testResult = ""
     @State private var showBook = false
     @State private var showGuide = false
+    @State private var showInfoGuide = false
+    @State private var showAbout = false
 
     var body: some View {
         NavigationStack {
@@ -42,6 +44,11 @@ struct SettingsView: View {
                     }
                 }
 
+                Section("Khác") {
+                    Button("📖  Hướng dẫn") { showInfoGuide = true }
+                    Button("ℹ️  Giới thiệu & quyền riêng tư") { showAbout = true }
+                }
+
                 Section("Nâng cao") {
                     TextField("Model Gemini", text: $prefs.geminiModel)
                         .autocorrectionDisabled().textInputAutocapitalization(.never)
@@ -54,6 +61,8 @@ struct SettingsView: View {
                 ToolbarItem(placement: .confirmationAction) { Button("Xong") { save(); dismiss() } }
             }
             .sheet(isPresented: $showBook) { GameBookView() }
+            .sheet(isPresented: $showInfoGuide) { GuideView() }
+            .sheet(isPresented: $showAbout) { AboutView() }
             .sheet(isPresented: $showGuide, onDismiss: reloadKeys) { KeyGuideView() }
             .onAppear(perform: reloadKeys)
             .onAppear {
