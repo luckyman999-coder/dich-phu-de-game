@@ -89,13 +89,21 @@ class DichSettingsActivity: AppCompatActivity()
 			catch(e: Exception) { Toast.makeText(this, "Vào Cài đặt > Chuyển văn bản thành giọng nói", Toast.LENGTH_LONG).show() }
 		}
 
-		header("4. Ghép đôi PS5")
+		header("4. TV")
+		note("Hiện phụ đề đè lên hình PS5 trên Android TV / Google TV, giọng đọc ra loa TV.")
+		button("📺  Kết nối TV") { startActivity(Intent(this, TvConnectActivity::class.java)) }
+
+		header("5. Ghép đôi PS5")
 		note("Ở màn hình chính bấm nút + → Đăng ký máy (Register), chọn PS5. Account ID có thể lấy bằng cách đăng nhập PSN (nên dùng tài khoản PSN thứ 2). Mã PIN lấy trên PS5: Cài đặt → Hệ thống → Chơi từ xa → Liên kết thiết bị.")
 		button("Đăng nhập PSN lấy Account ID") {
 			startActivity(Intent(this, PsnLoginActivity::class.java))
 		}
 		if(prefs.psnAccountId.isNotEmpty())
 			note("Account ID đã lưu: ${prefs.psnAccountId}")
+
+		header("Khác")
+		button("📖  Hướng dẫn") { startActivity(Intent(this, GuideActivity::class.java)) }
+		button("ℹ️  Giới thiệu & quyền riêng tư") { startActivity(Intent(this, AboutActivity::class.java)) }
 
 		button("Lưu") { save(); finish() }
 	}

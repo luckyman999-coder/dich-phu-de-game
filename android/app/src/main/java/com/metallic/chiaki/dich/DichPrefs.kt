@@ -76,6 +76,24 @@ open class DichPrefs(context: Context)
 		catch(e: Exception) { emptyMap() }
 		set(v) { sp.edit().putString("speaker_genders", org.json.JSONObject(v as Map<*, *>).toString()).apply() }
 
+	// TV đã ghép đôi (app Dịch Game TV)
+	var tvHost: String
+		get() = sp.getString("tv_host", "") ?: ""
+		set(v) { sp.edit().putString("tv_host", v).apply() }
+	var tvPort: Int
+		get() = sp.getInt("tv_port", 47810)
+		set(v) { sp.edit().putInt("tv_port", v).apply() }
+	var tvName: String
+		get() = sp.getString("tv_name", "") ?: ""
+		set(v) { sp.edit().putString("tv_name", v).apply() }
+	var tvToken: String
+		get() = sp.getString("tv_token", "") ?: ""
+		set(v) { sp.edit().putString("tv_token", v).apply() }
+	/** Đọc thoại bằng loa TV (điện thoại im) */
+	var speakOnTv: Boolean
+		get() = sp.getBoolean("speak_on_tv", true)
+		set(v) { sp.edit().putBoolean("speak_on_tv", v).apply() }
+
 	var psnAccountId: String
 		get() = sp.getString("psn_account_id", "") ?: ""
 		set(v) { sp.edit().putString("psn_account_id", v).apply() }

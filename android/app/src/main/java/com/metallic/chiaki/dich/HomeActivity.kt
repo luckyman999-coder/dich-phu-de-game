@@ -77,6 +77,12 @@ class HomeActivity: AppCompatActivity()
 		viewModel = ViewModelProvider(this, viewModelFactory { MainViewModel(getDatabase(this), Preferences(this)) })[MainViewModel::class.java]
 		viewModel.discoveryManager.active = true
 		buildUi()
+		val sp = getSharedPreferences("dich_game", MODE_PRIVATE)
+		if(savedInstanceState == null && !sp.getBoolean("guide_seen", false))
+		{
+			sp.edit().putBoolean("guide_seen", true).apply()
+			startActivity(Intent(this, GuideActivity::class.java))
+		}
 		viewModel.displayHosts.observe(this) {
 			hosts = it
 			updateStatus()
@@ -252,9 +258,12 @@ class HomeActivity: AppCompatActivity()
 		addCheck("Ghép đôi máy chơi game", paired, if(paired) "Đã ghép đôi" else "Bấm Chơi để tự tìm và ghép đôi") {
 			onStartPressed()
 		}
+		addCheck("Hiện phụ đề trên TV", prefs.tvToken.isNotEmpty(), if(prefs.tvToken.isNotEmpty()) prefs.tvName else "Không bắt buộc · Android TV / Google TV", optional = true) {
+			startActivity(Intent(this, TvConnectActivity::class.java))
+		}
 	}
 
-	private fun addCheck(title: String, ok: Boolean, sub: String, onClick: () -> Unit)
+	private fun addCheck(title: String, ok: Boolean, sub: String, optional: Boolean = false, onClick: () -> Unit)
 	{
 		val row = LinearLayout(this).apply {
 			gravity = Gravity.CENTER_VERTICAL
@@ -262,12 +271,12 @@ class HomeActivity: AppCompatActivity()
 			setOnClickListener { onClick() }
 		}
 		row.addView(TextView(this).apply {
-			text = if(ok) "✓" else "!"
+			text = if(ok) "✓" else if(optional) "+" else "!"
 			textSize = 15f
 			setTypeface(typeface, Typeface.BOLD)
 			gravity = Gravity.CENTER
-			setTextColor(if(ok) BG else Color.BLACK)
-			background = GradientDrawable().apply { shape = GradientDrawable.OVAL; setColor(if(ok) ACCENT else AMBER) }
+			setTextColor(if(ok) BG else if(optional) TEXT else Color.BLACK)
+			background = GradientDrawable().apply { shape = GradientDrawable.OVAL; setColor(if(ok) ACCENT else if(optional) STROKE else AMBER) }
 		}, LinearLayout.LayoutParams(px(26), px(26)).apply { marginEnd = px(12) })
 		val texts = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
 		texts.addView(TextView(this).apply { text = title; textSize = 15f; setTextColor(TEXT) })
@@ -319,6 +328,16 @@ class HomeActivity: AppCompatActivity()
 			background = GradientDrawable().apply { cornerRadius = px(8).toFloat(); setColor(ACCENT) }
 		}, LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { marginStart = px(6) })
 		header.addView(View(this), LinearLayout.LayoutParams(0, 1, 1f))
+		header.addView(TextView(this).apply {
+			text = "?"
+			textSize = 18f
+			setTypeface(typeface, Typeface.BOLD)
+			setTextColor(TEXT)
+			gravity = Gravity.CENTER
+			contentDescription = "Hướng dẫn"
+			background = GradientDrawable().apply { shape = GradientDrawable.OVAL; setStroke(px(2), TEXT) }
+			setOnClickListener { startActivity(Intent(this@HomeActivity, GuideActivity::class.java)) }
+		}, LinearLayout.LayoutParams(px(30), px(30)).apply { marginEnd = px(10) })
 		header.addView(ImageButton(this).apply {
 			setImageResource(com.metallic.chiaki.R.drawable.ic_settings)
 			setColorFilter(TEXT)

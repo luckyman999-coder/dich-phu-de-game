@@ -52,6 +52,10 @@
         <activity android:name=".dich.KeyGuideActivity"
             android:windowSoftInputMode="adjustResize" />
 
+        <activity android:name=".dich.TvConnectActivity" />
+        <activity android:name=".dich.GuideActivity" />
+        <activity android:name=".dich.AboutActivity" />
+
         <activity android:name=".dich.DemoActivity"
             android:screenOrientation="portrait" />
 

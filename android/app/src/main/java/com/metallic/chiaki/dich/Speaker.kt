@@ -51,9 +51,12 @@ class Speaker(context: Context, private val prefs: DichPrefs)
 		Log.i(TAG, "TTS sẵn sàng, ${viVoices.size} giọng tiếng Việt")
 	}
 
+	/** Tắt giọng trên điện thoại khi TV đang đọc thay */
+	@Volatile var muted = false
+
 	fun speak(t: Translation)
 	{
-		if(!ready || !prefs.speak) return
+		if(!ready || !prefs.speak || muted) return
 		val (voice, pitch) = voiceFor(t.speaker, t.gender)
 		if(voice != null)
 			tts.setVoice(voice)

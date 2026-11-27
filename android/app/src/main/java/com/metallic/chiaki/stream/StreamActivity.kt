@@ -65,6 +65,7 @@ class StreamActivity : AppCompatActivity()
 	private lateinit var translator: Translator
 	private lateinit var speaker: Speaker
 	private lateinit var pipeline: SubtitlePipeline
+	private lateinit var tvLink: TvLink
 	private var dichReady = false
 
 	override fun onCreate(savedInstanceState: Bundle?)
@@ -197,6 +198,7 @@ class StreamActivity : AppCompatActivity()
 		if(dichReady)
 		{
 			pipeline.release()
+			tvLink.stop()
 			speaker.shutdown()
 			ChiakiAudio.setMuted(false)
 		}
@@ -209,9 +211,21 @@ class StreamActivity : AppCompatActivity()
 		dichPrefs = DichPrefs(this)
 		translator = Translator(dichPrefs)
 		speaker = Speaker(this, dichPrefs)
+		tvLink = TvLink(this)
+		tvLink.onState = { connected ->
+			speaker.muted = connected && dichPrefs.speakOnTv
+			showDichStatus(if(connected) "Đã kết nối TV: ${dichPrefs.tvName}" else null)
+		}
+		tvLink.start()
 		pipeline = SubtitlePipeline(SurfaceFrameSource(binding.surfaceView), dichPrefs, translator, speaker,
-			onShow = { showSubtitle(it) },
-			onClear = { binding.dichSubtitleText.isGone = true },
+			onShow = {
+				showSubtitle(it)
+				tvLink.sendSubtitle(it, dichPrefs.region, dichPrefs.speak && dichPrefs.speakOnTv)
+			},
+			onClear = {
+				binding.dichSubtitleText.isGone = true
+				tvLink.clear()
+			},
 			onStatus = { showDichStatus(it) })
 		dichReady = true
 
