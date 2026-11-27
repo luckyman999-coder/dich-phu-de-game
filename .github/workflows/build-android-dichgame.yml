@@ -14,16 +14,16 @@ jobs:
     env:
       KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           submodules: recursive
 
-      - uses: actions/setup-java@v5
+      - uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: '17'
 
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
 
@@ -65,7 +65,7 @@ jobs:
           cp app/build/outputs/bundle/release/*.aab ../out-aab/Dich-Game-GooglePlay.aab
           rm -f upload.jks local.properties
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: ${{ env.KEYSTORE_BASE64 != '' }}
         with:
           name: Dich-Game-GooglePlay-aab
@@ -88,13 +88,13 @@ jobs:
           cp android/app/build/outputs/apk/debug/*.apk out/Dich-Game-Android.apk
           ls -la out
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: Dich-Game-Android
           path: out/Dich-Game-Android.apk
 
       - name: Đăng bản tải về (Release "android-moi-nhat")
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: android-moi-nhat
           name: Bản Android mới nhất
