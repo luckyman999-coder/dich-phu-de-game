@@ -2,7 +2,7 @@
 
 ## Thông tin app
 - **Tên app:** Dịch Game – Phụ đề Việt cho game
-- **Package:** vn.dichgame.ps5 (không đổi được sau khi nộp)
+- **Package:** vn.dichgame.app (không đổi được sau khi nộp)
 - **Danh mục:** Giải trí
 - **Chính sách quyền riêng tư:** https://luckyman999-coder.github.io/dich-phu-de-game/privacy.html
 

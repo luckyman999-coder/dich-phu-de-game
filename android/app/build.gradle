@@ -25,7 +25,7 @@ android {
     ndkVersion "28.2.13676358"
 
     defaultConfig {
-        applicationId "vn.dichgame.ps5"
+        applicationId "vn.dichgame.app"
         minSdk 24
         targetSdk 36
         // Dịch Game: phiên bản riêng (tăng versionCode mỗi lần nộp Google Play)

@@ -26,7 +26,7 @@
         tools:ignore="GoogleAppIndexingWarning">
 
         <provider
-            android:authorities="vn.dichgame.ps5.fileprovider"
+            android:authorities="vn.dichgame.app.fileprovider"
             android:name="androidx.core.content.FileProvider"
             android:grantUriPermissions="true"
             android:exported="false">
