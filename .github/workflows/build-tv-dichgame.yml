@@ -1,0 +1,40 @@
+name: Build Android TV – Dịch Game TV
+
+on:
+  push:
+    branches: [ main ]
+    paths: [ 'tv/**', '.github/workflows/build-tv-dichgame.yml' ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Build APK
+        working-directory: tv
+        run: |
+          chmod +x gradlew
+          ./gradlew --no-daemon assembleRelease
+          mkdir -p ../out
+          cp app/build/outputs/apk/release/*.apk ../out/Dich-Game-TV.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Dich-Game-TV
+          path: out/Dich-Game-TV.apk
+      - name: Đăng bản tải về (Release "tv-moi-nhat")
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: tv-moi-nhat
+          name: Bản Android TV mới nhất
+          prerelease: true
+          make_latest: false
+          body: App Dịch Game TV cho Android TV / Google TV. Cài bằng app Downloader trên TV.
+          files: out/Dich-Game-TV.apk
