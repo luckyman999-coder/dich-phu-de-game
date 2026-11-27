@@ -44,7 +44,9 @@ class DichSettingsActivity: AppCompatActivity()
 		title = "Cài đặt dịch phụ đề"
 		prefs = DichPrefs(this)
 
-		val scroll = ScrollView(this)
+		window.statusBarColor = HomeActivity.BG
+		window.navigationBarColor = HomeActivity.BG
+		val scroll = ScrollView(this).apply { setBackgroundColor(HomeActivity.BG) }
 		root = LinearLayout(this).apply {
 			orientation = LinearLayout.VERTICAL
 			val p = (16 * dp).toInt()
@@ -160,6 +162,7 @@ class DichSettingsActivity: AppCompatActivity()
 		root.addView(TextView(this).apply {
 			this.text = text
 			textSize = 18f
+			setTextColor(HomeActivity.TEXT)
 			setTypeface(typeface, android.graphics.Typeface.BOLD)
 			setPadding(0, (24 * dp).toInt(), 0, (4 * dp).toInt())
 		})
@@ -169,7 +172,7 @@ class DichSettingsActivity: AppCompatActivity()
 	{
 		root.addView(TextView(this).apply {
 			this.text = text
-			alpha = 0.75f
+			setTextColor(HomeActivity.MUTED)
 			setPadding(0, (4 * dp).toInt(), 0, (4 * dp).toInt())
 		})
 	}
@@ -182,6 +185,8 @@ class DichSettingsActivity: AppCompatActivity()
 		}
 		val edit = TextInputEditText(layout.context).apply {
 			setText(value)
+			setTextColor(HomeActivity.TEXT)
+			typeface = android.graphics.Typeface.DEFAULT
 			inputType = when
 			{
 				secret -> InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
@@ -206,6 +211,7 @@ class DichSettingsActivity: AppCompatActivity()
 	{
 		val s = SwitchMaterial(this).apply {
 			this.text = text
+			setTextColor(HomeActivity.TEXT)
 			isChecked = checked
 		}
 		root.addView(s)
@@ -216,6 +222,10 @@ class DichSettingsActivity: AppCompatActivity()
 	{
 		val b = MaterialButton(this).apply {
 			this.text = text
+			isAllCaps = false
+			setTextColor(HomeActivity.BG)
+			backgroundTintList = android.content.res.ColorStateList.valueOf(HomeActivity.ACCENT)
+			cornerRadius = (12 * dp).toInt()
 			setOnClickListener { onClick() }
 		}
 		root.addView(b, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)

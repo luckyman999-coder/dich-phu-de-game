@@ -194,12 +194,12 @@ class DemoActivity: AppCompatActivity()
 
 		root.addView(TextView(this).apply {
 			text = "BẮT ĐẦU CHƠI THẬT"
-			setTextColor(Color.WHITE)
+			setTextColor(HomeActivity.BG)
 			textSize = 17f
 			setTypeface(typeface, Typeface.BOLD)
 			gravity = Gravity.CENTER
 			setPadding(0, px(14), 0, px(14))
-			background = GradientDrawable().apply { cornerRadius = px(28).toFloat(); setColor(Color.rgb(108, 99, 255)) }
+			background = GradientDrawable().apply { cornerRadius = px(28).toFloat(); setColor(HomeActivity.ACCENT) }
 			setOnClickListener { finish() }
 		}, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply {
 			setMargins(px(20), 0, px(20), px(24))

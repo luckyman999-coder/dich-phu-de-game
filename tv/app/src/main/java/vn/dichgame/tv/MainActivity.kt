@@ -81,7 +81,7 @@ class MainActivity: Activity()
 		// cột trái: mã ghép đôi + trạng thái
 		val left = card().apply { setPadding(px(24), px(20), px(24), px(20)) }
 		left.addView(text("MÃ GHÉP ĐÔI", 16f, MUTED))
-		left.addView(text(SubtitleService.pairingCode(this).toCharArray().joinToString(" "), 64f, ACCENT, true))
+		left.addView(text(SubtitleService.pairingCode(this), 56f, ACCENT, true).apply { isSingleLine = true; letterSpacing = 0.15f })
 		left.addView(text("Tên TV: ${Build.MODEL}", 16f, TEXT).apply { setPadding(0, px(8), 0, 0) })
 		left.addView(text("Địa chỉ: ${localIp() ?: "chưa có Wi-Fi"} : ${SubtitleService.PORT}", 16f, TEXT))
 		val phone = SubtitleService.connectedPhone
