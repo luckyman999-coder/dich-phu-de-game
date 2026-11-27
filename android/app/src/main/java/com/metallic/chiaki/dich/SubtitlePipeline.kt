@@ -102,7 +102,7 @@ class SubtitlePipeline(
 				val t0 = System.currentTimeMillis()
 				try { tick() }
 				catch(e: CancellationException) { throw e }
-				catch(e: Exception) { Log.w(TAG, "tick lỗi", e) }
+				catch(e: Exception) { Log.e(TAG, "tick lỗi", e) }
 				val dt = System.currentTimeMillis() - t0
 				delay(max(50L, INTERVAL_MS - dt))
 			}
@@ -140,6 +140,7 @@ class SubtitlePipeline(
 		val frame = frameSource.capture() ?: return
 		val crop = cropRegion(frame) ?: return
 		val text = ocr(crop)
+		Log.d(TAG, "OCR ${frame.width}x${frame.height} vùng ${crop.width}x${crop.height}: ${text.replace('\n', '|')}")
 		if(crop !== frame) crop.recycle()
 		handleText(text)
 	}

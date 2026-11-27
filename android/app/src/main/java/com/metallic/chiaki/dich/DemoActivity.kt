@@ -136,7 +136,14 @@ class DemoActivity: AppCompatActivity()
 			setPadding(px(16), px(16), px(16), px(10))
 		})
 
-		val frame = FrameLayout(this)
+		// khung giữ đúng tỉ lệ 16:9 để khung chọn vùng không chiếm hết màn hình
+		val frame = object: FrameLayout(this) {
+			override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int)
+			{
+				val w = MeasureSpec.getSize(widthMeasureSpec)
+				super.onMeasure(MeasureSpec.makeMeasureSpec(w, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(w * 9 / 16, MeasureSpec.EXACTLY))
+			}
+		}
 		scene = DemoSceneView(this)
 		frame.addView(scene, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT))
 		region = RegionSelectView(this).apply {

@@ -56,6 +56,8 @@ jobs:
             ketqua/*.txt
 
   phone:
+    needs: tv
+    if: always()
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -91,7 +93,8 @@ jobs:
             adb install -r android/app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
             adb shell am instrument -w -e class com.metallic.chiaki.dich.SmokeTest vn.dichgame.app.test/androidx.test.runner.AndroidJUnitRunner | tee phone-test.txt
             mkdir -p shots && adb pull /sdcard/Android/data/vn.dichgame.app/files/shots shots/ || true
-            adb logcat -d -s AndroidRuntime:E DichPipeline:* DichTranslator:* > phone-logcat.txt || true
+            adb logcat -d > phone-logcat-full.txt || true
+            grep -E "DichPipeline|DichTranslator|AndroidRuntime|mlkit|MLKit|TextRecognizer" phone-logcat-full.txt | tail -300 > phone-logcat.txt || true
             grep -q "OK (" phone-test.txt
       - name: Lưu kết quả
         if: always()
