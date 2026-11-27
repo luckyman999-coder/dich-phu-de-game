@@ -11,6 +11,8 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
     steps:
       - uses: actions/checkout@v5
         with:
@@ -34,7 +36,7 @@ jobs:
       - name: Cài NDK + CMake
         run: |
           yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
-          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "ndk;28.2.13676358" "cmake;3.22.1" "platforms;android-35" "build-tools;35.0.0"
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "ndk;28.2.13676358" "cmake;3.22.1" "platforms;android-36" "build-tools;36.0.0"
 
       - name: Build APK
         working-directory: android
@@ -42,6 +44,32 @@ jobs:
           chmod +x gradlew
           set -o pipefail
           ./gradlew --no-daemon assembleDebug 2>&1 | tee build.log
+
+      - name: Build bản nộp Google Play (.aab, có ký)
+        if: ${{ env.KEYSTORE_BASE64 != '' }}
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        working-directory: android
+        run: |
+          echo "$KEYSTORE_BASE64" | base64 -d > upload.jks
+          {
+            echo "chiakiKeystore=../upload.jks"
+            echo "chiakiKeystorePW=$KEYSTORE_PASSWORD"
+            echo "chiakiKeyAlias=$KEY_ALIAS"
+            echo "chiakiKeyPW=$KEY_PASSWORD"
+          } > local.properties
+          ./gradlew --no-daemon bundleRelease
+          mkdir -p ../out-aab
+          cp app/build/outputs/bundle/release/*.aab ../out-aab/Dich-Game-GooglePlay.aab
+          rm -f upload.jks local.properties
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ env.KEYSTORE_BASE64 != '' }}
+        with:
+          name: Dich-Game-GooglePlay-aab
+          path: out-aab/Dich-Game-GooglePlay.aab
 
       - name: Báo lỗi build (annotation)
         if: failure()
